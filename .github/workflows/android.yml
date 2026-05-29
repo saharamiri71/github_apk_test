@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -16,17 +16,33 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.4'
+          flutter-version: "3.35.4"
           channel: stable
+          cache: true
 
+      # 1) Create a fresh, valid Flutter app project on the runner
+      - name: Create Flutter project skeleton
+        run: flutter create -t app runner_app
+
+      # 2) Copy your source code into the generated project
+      - name: Copy app sources into runner project
+        run: |
+          rm -rf runner_app/lib
+          mkdir -p runner_app/lib
+          cp -R lib/* runner_app/lib/ || true
+          cp pubspec.yaml runner_app/pubspec.yaml
+
+      # 3) Get deps + build
       - name: Get dependencies
+        working-directory: runner_app
         run: flutter pub get
 
-      - name: Build APK
+      - name: Build APK (debug)
+        working-directory: runner_app
         run: flutter build apk --debug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: runner_app/build/app/outputs/flutter-apk/app-debug.apk
