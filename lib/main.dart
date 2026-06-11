@@ -217,7 +217,7 @@ class _MyAppState extends State<MyApp> {
                         color: Colors.purple,
                         child: showPurpleImage
                             ? Image.asset(
-                                'images/kpopd_1.png',
+                                'images/kado.png',
                                 fit: BoxFit.contain,
                                 width: double.infinity,
                                 height: double.infinity,
